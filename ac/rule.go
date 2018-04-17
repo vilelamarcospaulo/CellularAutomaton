@@ -1,59 +1,90 @@
 package ac
 
-type Pattern struct {
-	neighborhood [3]bool
-	output       bool
-}
+import "math"
 
 type Rule struct {
-	items []Pattern
+	Items []byte
+	Radius int
 }
 
-func equals(a []bool, b []bool) bool {
-	if len(a) != len(b) {
-		return false
+func calcIndex(i int, radius int, length int) int {
+	directIndex := i - radius
+
+	if directIndex < 0 {	
+		return length + directIndex
 	}
 
-	for i := 0; i < len(a); i++ {
-		if a[i] != b[i] {
-			return false
-		}
+	if directIndex >= length {
+		return directIndex - length
 	}
 
-	return true
+	return directIndex
 }
 
-func (rule Rule) apply(grid Grid) {
-	//only rules with at least on item and only cells with at least 3 elements, can match with a patter of type Left Center Right
-	if len(rule.items) <= 0 || len(grid.cells) < 3 {
-		return
+func toInteger(a []byte) int {
+	length := len(a)
+	sum := 0
+	for i := 0; i < length; i++ {
+		value := 0
+		if a[length - i - 1] == 1 {
+			value = 1 
+		}
+		j := float64(i)
+		sum += value * int(math.Pow(2, j))
 	}
 
-	for i := 0; i < len(grid.cells); i++ {
-		neighborhood := [3]bool{false, false, false}
-		neighborhood[1] = grid.cells[i]
+	return sum
+}
 
-		//get last cell, or the previous
-		if i == 0 {
-			neighborhood[0] = grid.cells[len(grid.cells)-1]
-		} else {
-			neighborhood[1] = grid.cells[i-1]
+func unshift(a []byte, b byte) {
+	len := len(a)
+	for i := 1; i < len; i++ {
+		a[i - 1] = a[i]
+	}
+	a[len - 1] = b
+}
+
+func (r Rule) Run(row []byte) []byte {
+	//tamanho da palavra, baseado no raio
+	length := (2 * r.Radius) + 1
+	word := make([]byte, length)
+
+	//tamanho total da "fita"
+	rowLength := len(row)
+	newRow := make([]byte, rowLength)
+
+	ruleIndex := 0
+
+	// carrega a primeira palavra (centro 0)
+	for i := 0; i < length; i++ {
+		word[i] = row[calcIndex(i, r.Radius, rowLength)]
+	}
+	ruleIndex = toInteger(word)
+	newRow[0] = r.Items[ruleIndex]
+	
+	//Com a primeira palavra carregada, basta apenas puxar o ultimo byte e deslocar para esquerda
+	//Como deslocar para a esquerda é o mesmo que multiplcar por 2, e subtrair o bit mais significativo
+	//Basta subtrailo e entao somar o bit entrando
+
+	pow := float64(length - 1)
+	subtract := int(math.Pow(2, pow))
+
+	for i := 1; i < rowLength; i++ {
+		if word[0] == 1 {
+			ruleIndex -= subtract
+		}
+		
+		ruleIndex *= 2
+
+		incoming := row[calcIndex(i, -r.Radius, rowLength)]
+		if incoming == 1 {
+			ruleIndex++
 		}
 
-		//get first cell, or the next
-		if i == len(grid.cells)-1 {
-			neighborhood[2] = grid.cells[0]
-		} else {
-			neighborhood[2] = grid.cells[i+1]
-		}
-
-		for _, pattern := range rule.items {
-			if pattern.neighborhood == neighborhood {
-				grid.cells[i] = pattern.output
-				break
-			}
-		}
+		newRow[i] = r.Items[ruleIndex]
+		
+		unshift(word, incoming)
 	}
 
-	grid.t++
+	return newRow
 }

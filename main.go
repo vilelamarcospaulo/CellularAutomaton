@@ -1,18 +1,42 @@
 package main
 
 import (
-	"fmt"
+	"./ac"
 )
 
 func main() {
-	primes := [6]int{2, 3, 5, 7, 11, 13}
-	teste := [6]int{2, 3, 5, 7, 11, 13}
+	T := 0
 
-	fmt.Println(primes == teste)
+	cells := make([]byte, 11)
+	cells[5] = 1
 
-	for i := 0; i < len(primes); i++ {
-		primes[i] = i
+	items := make([]byte, 8)
+	items[0] = 1
+	items[1] = 0
+	items[2] = 1
+	items[3] = 1
+	items[4] = 0
+	items[5] = 1
+	items[6] = 0
+	items[7] = 0
+
+	grid := ac.Grid {
+		Cells: &cells,
+		T: &T,
 	}
 
-	fmt.Println(primes == teste)
+
+	rule := ac.Rule {
+		Items: items,
+		Radius: 1,
+	}
+
+
+	ac := ac.CelullarAutomaton {
+		Grid: grid,
+		TMax: 10,
+		Rule: rule,
+	}
+	
+	ac.Run()
 }

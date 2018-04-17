@@ -4,14 +4,15 @@ import (
 	"fmt"
 )
 
-type Ac struct {
-	grid Grid
-	tMax int
+type CelullarAutomaton struct {
+	Grid Grid
+	TMax int
+	Rule Rule
 }
 
-func (a Ac) run() {
-	for a.tMax > a.grid.t {
-		a.grid.r.apply(a.grid)
-		fmt.Println(a.grid.cells)
+func (a CelullarAutomaton) Run() {
+	for a.TMax > *a.Grid.T {
+		a.Grid.nextStep(a.Rule)
+		fmt.Println(a.Grid.Cells)
 	}
 }

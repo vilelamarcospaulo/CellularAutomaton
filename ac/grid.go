@@ -1,11 +1,12 @@
 package ac
 
 type Grid struct {
-	cells []bool
-	t     int
-	r     Rule
+	Cells *([]byte)
+	T     *int
 }
 
-func (g Grid) nextStep() {
-	g.r.apply(g)
+func (g Grid) nextStep(r Rule) {
+	 result := r.Run(*g.Cells)
+	 *(g.Cells) = result
+	 *(g.T)++
 }
