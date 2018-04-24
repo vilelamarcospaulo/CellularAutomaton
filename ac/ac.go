@@ -1,9 +1,5 @@
 package ac
 
-import (
-	"fmt"
-)
-
 type CelullarAutomaton struct {
 	Grid Grid
 	TMax int
@@ -13,7 +9,6 @@ type CelullarAutomaton struct {
 func (a CelullarAutomaton) Run() {
 	for a.TMax > *a.Grid.T {
 		a.Grid.nextStep(a.Rule)
-		fmt.Println(**a.Grid.Cells)
 	}
 }
 
@@ -21,9 +16,14 @@ func Create(tMax int, state []byte, rule []byte, radius int) CelullarAutomaton {
 	t := 0
 	statePointer := &state
 
+	PPpointer := new([]byte)
+	Ppointer := new([]byte)
+
 	g := Grid{
-		Cells: &statePointer,
-		T:     &t,
+		PPCells: &PPpointer,
+		PCells:  &Ppointer,
+		Cells:   &statePointer,
+		T:       &t,
 	}
 
 	r := Rule{
