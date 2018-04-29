@@ -14,15 +14,17 @@ func (a *CelullarAutomaton) Run() {
 }
 
 func Create(tMax int, state []byte, rule []byte, radius int) CelullarAutomaton {
-	stateCurrent := make([]byte, len(state))
+	stateLength := len(state)
+	stateCurrent := make([]byte, stateLength)
 	for i := 0; i < len(state); i++ {
 		stateCurrent[i] = state[i]
 	}
+
 	g := Grid{
 		Cells:   stateCurrent,
-		Buffer:  make([]byte, len(state)),
-		PCells:  make([]byte, len(state)),
-		PPCells: make([]byte, len(state)),
+		Buffer:  make([]byte, stateLength),
+		PCells:  make([]byte, stateLength),
+		PPCells: make([]byte, stateLength),
 		T:       0,
 	}
 
